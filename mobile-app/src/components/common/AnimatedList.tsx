@@ -13,13 +13,13 @@ import Animated, {
   SlideInRight,
   SlideOutLeft,
 } from 'react-native-reanimated';
-import { FlashList } from '@shopify/flash-list';
+import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { useStore } from '../../store/useStore';
 import { colors } from '../../theme/colors';
 
 interface AnimatedListProps<T> extends Omit<FlatListProps<T>, 'renderItem'> {
   data: T[];
-  renderItem: (info: ListRenderItemInfo<T>) => React.ReactElement;
+  renderItem: ListRenderItem<T>;
   containerStyle?: ViewStyle;
   testID?: string;
   estimatedItemSize?: number;
@@ -43,7 +43,7 @@ export function AnimatedList<T>({
   }, []);
 
   const renderAnimatedItem = useCallback(
-    (info: ListRenderItemInfo<T>) => {
+    (info: { item: T; index: number }) => {
       return (
         <Animated.View
           entering={FadeIn.duration(300).springify()}
