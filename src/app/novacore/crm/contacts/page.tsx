@@ -1,3 +1,5 @@
+'use client';
+
 import { auth } from "@/lib/auth";
 import { searchContacts, type ContactFilters } from "./actions";
 import { Contact } from "@/lib/types/crm";
@@ -130,7 +132,6 @@ export default async function ContactsPage({
 }
 
 // Composant client pour gérer l'état de sélection
-'use client';
 function ClientBulkActions({ filters }: { filters: ContactFilters }) {
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
 
