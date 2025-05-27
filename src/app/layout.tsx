@@ -23,17 +23,17 @@ export default function RootLayout({
         <body className={`${inter.variable} font-sans`}>
           <CartProvider>
             <MainLayout>
-              <Toaster 
-                position="top-right"
-                toastOptions={{
+          <Toaster 
+            position="top-right"
+            toastOptions={{
                   duration: 3000,
-                  style: {
+              style: {
                     background: '#333',
                     color: '#fff',
-                  },
-                }}
-              />
-              {children}
+              },
+            }}
+          />
+          {children}
             </MainLayout>
           </CartProvider>
         </body>
