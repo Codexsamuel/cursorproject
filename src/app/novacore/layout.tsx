@@ -1,5 +1,37 @@
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/nextjs";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import MainLayout from "@/components/layout/MainLayout";
+import { 
+  Users, 
+  Briefcase, 
+  CheckSquare, 
+  MessageSquare, 
+  FileText, 
+  History, 
+  Code, 
+  PlayCircle, 
+  BookOpen 
+} from 'lucide-react';
+
+const NavLink = ({ href, children, icon: Icon }: { href: string; children: React.ReactNode; icon: any }) => {
+  const pathname = usePathname();
+  const isActive = pathname === href;
+  
+  return (
+    <Link 
+      href={href}
+      className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+        isActive 
+          ? 'bg-blue-50 text-blue-600' 
+          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+      }`}
+    >
+      <Icon className="w-5 h-5" />
+      {children}
+    </Link>
+  );
+};
 
 export default function NovaCoreLayout({
   children,
@@ -12,51 +44,51 @@ export default function NovaCoreLayout({
         <MainLayout>
           <div className="flex min-h-screen">
             {/* Sidebar NovaCore */}
-            <aside className="w-64 bg-white shadow-sm">
-              <nav className="px-4 py-6">
-                <div className="space-y-1">
-                  <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <aside className="w-64 bg-white border-r border-gray-200">
+              <nav className="p-4 space-y-6">
+                <div className="space-y-2">
+                  <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3">
                     CRM
                   </h2>
-                  <a href="/novacore/crm/contacts" className="nav-link block py-2">
+                  <NavLink href="/novacore/crm/contacts" icon={Users}>
                     Contacts
-                  </a>
-                  <a href="/novacore/crm/deals" className="nav-link block py-2">
+                  </NavLink>
+                  <NavLink href="/novacore/crm/deals" icon={Briefcase}>
                     Opportunités
-                  </a>
-                  <a href="/novacore/crm/tasks" className="nav-link block py-2">
+                  </NavLink>
+                  <NavLink href="/novacore/crm/tasks" icon={CheckSquare}>
                     Tâches
-                  </a>
+                  </NavLink>
                 </div>
 
-                <div className="mt-8 space-y-1">
-                  <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                <div className="space-y-2">
+                  <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3">
                     Assistant IA
                   </h2>
-                  <a href="/novacore/ai/chat" className="nav-link block py-2">
+                  <NavLink href="/novacore/ai/chat" icon={MessageSquare}>
                     Chat IA
-                  </a>
-                  <a href="/novacore/ai/templates" className="nav-link block py-2">
+                  </NavLink>
+                  <NavLink href="/novacore/ai/templates" icon={FileText}>
                     Templates
-                  </a>
-                  <a href="/novacore/ai/history" className="nav-link block py-2">
+                  </NavLink>
+                  <NavLink href="/novacore/ai/history" icon={History}>
                     Historique
-                  </a>
+                  </NavLink>
                 </div>
 
-                <div className="mt-8 space-y-1">
-                  <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                <div className="space-y-2">
+                  <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3">
                     Studio Dev
                   </h2>
-                  <a href="/novacore/dev/scripts" className="nav-link block py-2">
+                  <NavLink href="/novacore/dev/scripts" icon={Code}>
                     Scripts
-                  </a>
-                  <a href="/novacore/dev/playground" className="nav-link block py-2">
+                  </NavLink>
+                  <NavLink href="/novacore/dev/playground" icon={PlayCircle}>
                     Playground
-                  </a>
-                  <a href="/novacore/dev/docs" className="nav-link block py-2">
+                  </NavLink>
+                  <NavLink href="/novacore/dev/docs" icon={BookOpen}>
                     Documentation
-                  </a>
+                  </NavLink>
                 </div>
               </nav>
             </aside>
