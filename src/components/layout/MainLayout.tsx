@@ -2,6 +2,7 @@
 
 import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
+import Image from "next/image";
 import { type PropsWithChildren } from "react";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
@@ -53,7 +54,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   // Fermer le menu mobile lors du changement de route
   useEffect(() => {
     setIsMobileMenuOpen(false);
-  }, [usePathname()]);
+  }, [pathname]);
 
   const menuVariants = {
     closed: {
@@ -76,42 +77,45 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   const navigation = [
     { name: 'Accueil', href: '/' },
-    { name: 'NovaCore', href: '/novacore' },
-    { name: 'DL Style', href: '/dlstyle' },
+    { name: 'À propos', href: '/a-propos' },
+    { name: 'Services', href: '/services' },
+    { name: 'Formations', href: '/formations' },
+    { name: 'Devis IA', href: '/devis' },
+    { name: 'Prendre RDV', href: '/rendez-vous' },
+    { name: 'Portfolio', href: '/portfolio' },
+    { name: 'Témoignages', href: '/avis' },
+    { name: 'Contact', href: '/contact' },
+    { name: 'Connexion 🔒', href: '/sign-in' },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation principale */}
-      <nav className="bg-white shadow-sm">
+      <nav className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
               {/* Logo */}
               <Link href="/" className="flex-shrink-0 flex items-center">
-                <motion.span 
-                  className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                >
+                <Image
+                  src="https://res.cloudinary.com/dko5sommz/image/upload/v1743895989/1_f3thi3.png"
+                  alt="DL Solutions Logo"
+                  width={40}
+                  height={40}
+                  className="h-8 w-auto"
+                  priority
+                />
+                <span className="ml-2 text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                   DL Solutions
-                </motion.span>
+                </span>
               </Link>
 
               {/* Navigation principale - Desktop */}
-              <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+              <div className="hidden lg:ml-6 lg:flex lg:space-x-4">
                 {navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                      pathname === item.href
-                        ? 'border-blue-500 text-gray-900'
-                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                    }`}
-                  >
+                  <NavLink key={item.name} href={item.href}>
                     {item.name}
-                  </Link>
+                  </NavLink>
                 ))}
               </div>
             </div>
@@ -152,7 +156,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
               {/* Bouton menu mobile */}
               <motion.button
                 type="button"
-                className="sm:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                className="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 ml-4"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 whileTap={{ scale: 0.95 }}
               >
@@ -189,7 +193,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
-              className="sm:hidden"
+              className="lg:hidden"
               initial="closed"
               animate="open"
               exit="closed"
@@ -214,21 +218,28 @@ export default function MainLayout({ children }: MainLayoutProps) {
                     </Link>
                   </motion.div>
                 ))}
-                <div className="pt-4 pb-3 border-t border-gray-200">
-                  <div className="flex items-center px-4">
-                    <div className="flex-shrink-0">
-                      <UserButton afterSignOutUrl="/" />
-                    </div>
-                  </div>
-                </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </nav>
 
+      {/* Message défilant */}
+      <div className="bg-black text-white py-2 overflow-hidden">
+        <div className="animate-marquee whitespace-nowrap">
+          <span className="inline-block px-4">
+            🎉 Bienvenue chez DL Solutions - Votre partenaire pour l'innovation et le développement digital 🚀
+            • Solutions IA et CRM sur mesure •
+            Formations professionnelles certifiantes •
+            Création de contenu visuel et vidéo •
+            Développement web et mobile •
+            Contactez-nous au +237 XXX XXX XXX •
+          </span>
+        </div>
+      </div>
+
       {/* Contenu principal */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {isError ? (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
             <p className="text-red-600">
@@ -247,7 +258,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t">
+      <footer className="bg-white border-t mt-auto">
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
@@ -337,4 +348,16 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   );
-} 
+}
+
+// Ajouter ces styles dans la section des styles globaux (si nécessaire)
+const styles = `
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+`; 

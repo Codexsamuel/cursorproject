@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fond de carte -->
+  <rect width="800" height="400" fill="#f3f4f6"/>
+  
+  <!-- Éléments de carte stylisés -->
+  <rect x="100" y="50" width="600" height="300" fill="#e5e7eb" rx="10"/>
+  
+  <!-- Routes -->
+  <path d="M150,200 L650,200" stroke="#ffffff" stroke-width="20" stroke-linecap="round"/>
+  <path d="M400,100 L400,300" stroke="#ffffff" stroke-width="20" stroke-linecap="round"/>
+  
+  <!-- Points d'intérêt -->
+  <circle cx="300" cy="150" r="30" fill="#3b82f6" opacity="0.5"/>
+  <circle cx="500" cy="250" r="30" fill="#3b82f6" opacity="0.5"/>
+  
+  <!-- Marqueur de localisation -->
+  <path d="M400,200 L380,250 L420,250 Z" fill="#ef4444"/>
+  <circle cx="400" cy="200" r="15" fill="#ef4444"/>
+  <circle cx="400" cy="200" r="8" fill="#ffffff"/>
+  
+  <!-- Légende -->
+  <rect x="650" y="50" width="30" height="30" fill="#3b82f6" opacity="0.5"/>
+  <text x="690" y="70" font-family="Arial" font-size="14" fill="#4b5563">Points d'intérêt</text>
+  
+  <path d="M650,100 L680,130 L710,100" stroke="#ef4444" stroke-width="3" fill="none"/>
+  <text x="690" y="150" font-family="Arial" font-size="14" fill="#4b5563">Notre position</text>
+  
+  <!-- Texte -->
+  <text x="400" y="350" font-family="Arial" font-size="18" fill="#4b5563" text-anchor="middle">
+    Yaoundé, Cameroun
+  </text>
+</svg> 

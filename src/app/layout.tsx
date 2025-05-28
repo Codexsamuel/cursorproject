@@ -1,43 +1,35 @@
-import './globals.css'
-import { Inter } from 'next/font/google'
-import { ClerkProvider } from '@clerk/nextjs'
-import { Toaster } from 'react-hot-toast'
-import { CartProvider } from '@/context/CartContext'
-import MainLayout from '@/components/layout/MainLayout'
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import Chatbot from '@/components/chat/Chatbot';
+import ConsentBanner from '@/components/common/ConsentBanner';
+import { AuthProvider } from '@/components/auth/AuthProvider';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const inter = Inter({ subsets: ['latin'] });
 
-export const metadata = {
-  title: 'DL Solutions - Écosystème Digital Africain',
-  description: 'Plateforme modulaire et intelligente pour la transformation digitale en Afrique',
-}
+export const metadata: Metadata = {
+  title: 'Dave & Luce Solutions',
+  description: 'Solutions technologiques innovantes pour votre entreprise',
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
       <html lang="fr">
-        <body className={`${inter.variable} font-sans`}>
-          <CartProvider>
-            <MainLayout>
-          <Toaster 
-            position="top-right"
-            toastOptions={{
-                  duration: 3000,
-              style: {
-                    background: '#333',
-                    color: '#fff',
-              },
-            }}
-          />
-          {children}
-            </MainLayout>
-          </CartProvider>
+      <body className={inter.className}>
+        <AuthProvider>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+          <Chatbot />
+          <ConsentBanner />
+        </AuthProvider>
         </body>
       </html>
-    </ClerkProvider>
-  )
+  );
 } 

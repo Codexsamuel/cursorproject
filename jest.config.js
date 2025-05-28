@@ -12,7 +12,36 @@ const customJestConfig = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+  // Configuration pour les tests de base de données
+  testMatch: [
+    '**/__tests__/**/*.test.[jt]s?(x)',
+  ],
+  // Utiliser l'environnement node pour les tests de base de données
+  testEnvironmentOptions: {
+    customExportConditions: ['node', 'node-addons'],
+  },
+  // Ignorer les tests de base de données dans l'environnement jsdom
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/.next/',
+    '/src/__tests__/database/',
+  ],
 };
 
-// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-module.exports = createJestConfig(customJestConfig); 
+// Configuration spécifique pour les tests de base de données
+const databaseJestConfig = {
+  ...customJestConfig,
+  testEnvironment: 'jest-environment-node',
+  testMatch: [
+    '**/__tests__/database/**/*.test.[jt]s?(x)',
+  ],
+};
+
+// Exporter les deux configurations
+module.exports = {
+  ...createJestConfig(customJestConfig),
+  projects: [
+    createJestConfig(customJestConfig),
+    createJestConfig(databaseJestConfig),
+  ],
+}; 

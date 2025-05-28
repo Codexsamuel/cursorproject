@@ -1,140 +1,129 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, ViewStyle, Platform } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
-  withTiming,
+  useSharedValue,
   withSpring,
-  interpolate,
-  Extrapolate,
+  withTiming,
+  Easing,
   FadeIn,
   FadeOut,
   SlideInRight,
   SlideOutLeft,
-  Layout,
 } from 'react-native-reanimated';
 import { useStore } from '../../store/useStore';
 import { colors } from '../../theme/colors';
 
+export type TransitionType = 'fade' | 'slide' | 'scale' | 'none';
+
 interface PageTransitionProps {
   children: React.ReactNode;
-  style?: ViewStyle;
-  testID?: string;
-  type?: 'fade' | 'slide' | 'scale';
+  type?: TransitionType;
   duration?: number;
-  delay?: number;
+  style?: ViewStyle;
+  onTransitionEnd?: () => void;
+  testID?: string;
 }
+
+const AnimatedView = Animated.createAnimatedComponent(View);
 
 export const PageTransition: React.FC<PageTransitionProps> = ({
   children,
-  style,
-  testID,
-  type = 'slide',
+  type = 'fade',
   duration = 300,
-  delay = 0,
+  style,
+  onTransitionEnd,
+  testID,
 }) => {
   const { isDarkMode } = useStore();
   const theme = isDarkMode ? colors.dark : colors.light;
-
-  // Animation values
-  const progress = useSharedValue(0);
   const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
 
   useEffect(() => {
-    // Start animations after delay
-    const timer = setTimeout(() => {
-      progress.value = withTiming(1, {
-        duration,
-      });
-      scale.value = withSpring(1, {
-        damping: 15,
-        stiffness: 150,
-      });
-    }, delay);
+    // Animation d'entrée
+    switch (type) {
+      case 'scale':
+        scale.value = withSpring(1, {
+          damping: 15,
+          stiffness: 120,
+        });
+        break;
+      case 'fade':
+        opacity.value = withTiming(1, {
+          duration,
+          easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        });
+        break;
+    }
 
-    return () => clearTimeout(timer);
-  }, [duration, delay, progress, scale]);
+    // Nettoyage
+    return () => {
+      if (type === 'scale') {
+        scale.value = withSpring(0.95);
+      } else if (type === 'fade') {
+        opacity.value = withTiming(0, { duration: duration / 2 });
+      }
+    };
+  }, [type, duration]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+      opacity: opacity.value,
+    };
+  });
 
   const getEnteringAnimation = () => {
     switch (type) {
-      case 'fade':
-        return FadeIn.duration(duration).delay(delay);
       case 'slide':
-        return SlideInRight.duration(duration).delay(delay);
+        return SlideInRight.duration(duration);
+      case 'fade':
+        return FadeIn.duration(duration);
       case 'scale':
-        return Layout.springify().damping(15).stiffness(150).delay(delay);
+        return undefined;
       default:
-        return SlideInRight.duration(duration).delay(delay);
+        return undefined;
     }
   };
 
   const getExitingAnimation = () => {
     switch (type) {
-      case 'fade':
-        return FadeOut.duration(duration);
       case 'slide':
         return SlideOutLeft.duration(duration);
+      case 'fade':
+        return FadeOut.duration(duration);
       case 'scale':
-        return Layout.springify().damping(15).stiffness(150);
+        return undefined;
       default:
-        return SlideOutLeft.duration(duration);
+        return undefined;
     }
   };
 
-  const containerAnimatedStyle = useAnimatedStyle(() => {
-    const translateX = interpolate(
-      progress.value,
-      [0, 1],
-      [type === 'slide' ? 50 : 0, 0],
-      Extrapolate.CLAMP
-    );
-
-    const opacity = interpolate(
-      progress.value,
-      [0, 1],
-      [type === 'fade' ? 0 : 1, 1],
-      Extrapolate.CLAMP
-    );
-
-    return {
-      transform: [
-        { translateX },
-        { scale: type === 'scale' ? scale.value : 1 },
-      ],
-      opacity,
-    };
-  });
+  if (type === 'none') {
+    return <View style={[styles.container, style]}>{children}</View>;
+  }
 
   return (
-    <Animated.View
+    <AnimatedView
       style={[
         styles.container,
         { backgroundColor: theme.background },
-        containerAnimatedStyle,
         style,
+        type !== 'slide' && animatedStyle,
       ]}
       entering={getEnteringAnimation()}
       exiting={getExitingAnimation()}
+      onLayout={() => onTransitionEnd?.()}
       testID={testID}
     >
       {children}
-    </Animated.View>
+    </AnimatedView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
   },
 }); 

@@ -33,7 +33,11 @@ type AnimatedListProps<T> = FlashListProps<T> & {
   ListEmptyComponent?: React.ComponentType<any> | React.ReactElement | null;
 };
 
-const AnimatedFlashList = Animated.createAnimatedComponent(FlashList) as typeof FlashList;
+// Définition du type pour le composant animé
+type AnimatedFlashListType<T> = React.ComponentType<FlashListProps<T>>;
+
+// Création du composant animé avec le bon type
+const AnimatedFlashList = Animated.createAnimatedComponent(FlashList) as AnimatedFlashListType<any>;
 
 const springConfig = {
   damping: 15,
@@ -85,7 +89,7 @@ export function AnimatedList<T>({
       );
     },
     [renderItem]
-  ) as ListRenderItem<T>;
+  );
 
   const refreshControl = useMemo(() => {
     if (!onRefresh) return undefined;

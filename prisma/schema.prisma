@@ -1,0 +1,214 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========== 👤 UTILISATEURS & AUTH ==========
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  role          String    @default("user") // user, admin, manager
+  clerkId       String?   @unique // ID Clerk pour l'authentification
+  phone         String?
+  avatar        String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  clients       Client[]
+  bookings      Booking[]
+  payments      Payment[]
+  messages      ContactMessage[]
+  notifications Notification[]
+
+  @@index([email])
+  @@index([role])
+  @@index([clerkId])
+}
+
+// ========== 👥 CLIENTS ==========
+model Client {
+  id            String    @id @default(cuid())
+  name          String
+  email         String?
+  phone         String?
+  type          String    @default("individual") // individual, company
+  status        String    @default("active") // active, inactive, blocked
+  notes         String?   @db.Text
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  userId        String    // Agent qui gère le client
+  user          User      @relation(fields: [userId], references: [id])
+  bookings      Booking[]
+  payments      Payment[]
+  messages      ContactMessage[]
+
+  @@index([email])
+  @@index([phone])
+  @@index([type])
+  @@index([status])
+  @@index([userId])
+}
+
+// ========== 🏨 RÉSERVATIONS ==========
+model Booking {
+  id            String    @id @default(cuid())
+  type          String    // hotel, spa, restaurant
+  status        String    @default("pending") // pending, confirmed, cancelled, completed
+  startDate     DateTime
+  endDate       DateTime?
+  guests        Int       @default(1)
+  totalAmount   Float
+  currency      String    @default("XOF")
+  notes         String?   @db.Text
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  clientId      String
+  client        Client    @relation(fields: [clientId], references: [id])
+  userId        String    // Agent qui a créé la réservation
+  user          User      @relation(fields: [userId], references: [id])
+  payments      Payment[]
+  services      BookingService[]
+
+  @@index([type])
+  @@index([status])
+  @@index([startDate])
+  @@index([clientId])
+  @@index([userId])
+}
+
+// ========== 💰 PAIEMENTS ==========
+model Payment {
+  id            String    @id @default(cuid())
+  amount        Float
+  currency      String    @default("XOF")
+  status        String    @default("pending") // pending, completed, failed, refunded
+  method        String    // stripe, cinetpay, cash
+  providerId    String?   // ID de transaction Stripe/CinetPay
+  metadata      Json?     // Données supplémentaires du paiement
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  bookingId     String?
+  booking       Booking?  @relation(fields: [bookingId], references: [id])
+  clientId      String
+  client        Client    @relation(fields: [clientId], references: [id])
+  userId        String    // Agent qui a traité le paiement
+  user          User      @relation(fields: [userId], references: [id])
+
+  @@index([status])
+  @@index([method])
+  @@index([providerId])
+  @@index([bookingId])
+  @@index([clientId])
+  @@index([userId])
+}
+
+// ========== 📬 MESSAGES & NOTIFICATIONS ==========
+model ContactMessage {
+  id            String    @id @default(cuid())
+  name          String
+  email         String
+  phone         String
+  subject       String
+  message       String    @db.Text
+  service       String    // hotel, spa, restaurant
+  status        String    @default("new") // new, read, replied, archived
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  clientId      String?
+  client        Client?   @relation(fields: [clientId], references: [id])
+  userId        String?   // Agent qui a répondu
+  user          User?     @relation(fields: [userId], references: [id])
+
+  @@index([status])
+  @@index([service])
+  @@index([createdAt])
+  @@index([clientId])
+  @@index([userId])
+}
+
+model Notification {
+  id            String    @id @default(cuid())
+  type          String    // booking, payment, message, system
+  title         String
+  message       String
+  read          Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+
+  @@index([type])
+  @@index([read])
+  @@index([userId])
+}
+
+// ========== 🛍️ SERVICES ==========
+model Service {
+  id            String    @id @default(cuid())
+  name          String
+  type          String    // hotel, spa, restaurant
+  description   String?   @db.Text
+  price         Float
+  currency      String    @default("XOF")
+  duration      Int?      // Durée en minutes
+  status        String    @default("active") // active, inactive
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  bookings      BookingService[]
+
+  @@index([type])
+  @@index([status])
+}
+
+model BookingService {
+  id            String    @id @default(cuid())
+  quantity      Int       @default(1)
+  price         Float     // Prix au moment de la réservation
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  bookingId     String
+  booking       Booking   @relation(fields: [bookingId], references: [id])
+  serviceId     String
+  service       Service   @relation(fields: [serviceId], references: [id])
+
+  @@index([bookingId])
+  @@index([serviceId])
+}
+
+// ========== 📊 STATISTIQUES ==========
+model Analytics {
+  id            String    @id @default(cuid())
+  type          String    // booking, payment, client
+  metric        String    // count, revenue, conversion
+  value         Float
+  period        String    // daily, weekly, monthly
+  date          DateTime
+  metadata      Json?     // Données supplémentaires
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([type])
+  @@index([metric])
+  @@index([period])
+  @@index([date])
+} 

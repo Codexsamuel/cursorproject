@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fond -->
+  <rect width="800" height="400" fill="#f3f4f6"/>
+  
+  <!-- Carte de témoignage -->
+  <rect x="100" y="50" width="600" height="300" fill="#ffffff" rx="10" stroke="#e5e7eb" stroke-width="2"/>
+  
+  <!-- Photo de profil -->
+  <circle cx="200" cy="150" r="50" fill="#3b82f6"/>
+  <circle cx="200" cy="150" r="45" fill="#ffffff"/>
+  <circle cx="200" cy="150" r="40" fill="#3b82f6" opacity="0.2"/>
+  
+  <!-- Guillemets -->
+  <text x="150" y="100" font-family="Arial" font-size="48" fill="#3b82f6" opacity="0.3">"</text>
+  <text x="650" y="300" font-family="Arial" font-size="48" fill="#3b82f6" opacity="0.3">"</text>
+  
+  <!-- Texte du témoignage -->
+  <text x="300" y="120" font-family="Arial" font-size="16" fill="#4b5563">
+    DL Solutions a transformé notre présence en ligne avec
+  </text>
+  <text x="300" y="150" font-family="Arial" font-size="16" fill="#4b5563">
+    une expertise technique exceptionnelle et un service
+  </text>
+  <text x="300" y="180" font-family="Arial" font-size="16" fill="#4b5563">
+    client remarquable.
+  </text>
+  
+  <!-- Nom et titre -->
+  <text x="300" y="250" font-family="Arial" font-size="18" fill="#1e40af" font-weight="bold">
+    Jean Dupont
+  </text>
+  <text x="300" y="280" font-family="Arial" font-size="14" fill="#6b7280">
+    Directeur Marketing, Entreprise XYZ
+  </text>
+  
+  <!-- Étoiles de notation -->
+  <text x="300" y="220" font-family="Arial" font-size="20" fill="#fbbf24">★★★★★</text>
+</svg> 
